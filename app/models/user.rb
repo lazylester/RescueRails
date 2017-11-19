@@ -83,6 +83,7 @@ require 'digest'
 
 class User < ApplicationRecord
   include Filterable
+  devise :database_authenticatable
 
   attr_accessor :password,
                 :accessible
@@ -173,6 +174,17 @@ class User < ApplicationRecord
 
   def has_password?(submitted_password)
     encrypted_password == encrypt(submitted_password)
+  end
+
+  def valid_password?(password)
+    return super if self.encrypted_password.present?
+
+    if self.legacy_password == encrypt(password)
+      update!(password: password, legacy_password: nil)
+      return true
+    end
+
+    return false
   end
 
   def self.authenticate(email, submitted_password)

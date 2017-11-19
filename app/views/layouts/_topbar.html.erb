@@ -59,7 +59,7 @@
                   <li><a href="/terms">Terms and Conditions</a></li>
                 </ul>
               </li>
-              <% if signed_in? %>
+              <% if user_signed_in? %>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Staff<b class="caret"></b></a>
                   <ul class="dropdown-menu">
@@ -76,11 +76,11 @@
                     <% end %>
                     <li><%= link_to "Users", users_path %></li>
                     <li><%= link_to "My Profile", current_user %></li>
-                    <li><%= link_to "Sign out", signout_path %></li>
+                    <li><%= link_to "Sign out", destroy_user_session_path, method: :delete %></li>
                   </ul>
                 </li>
               <% else %>
-                <li><%= link_to "Sign in", signin_path %></li>
+                <li><%= link_to "Sign in", new_user_session_path %></li>
               <% end %>
             </ul>
           </div>
