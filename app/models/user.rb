@@ -83,9 +83,9 @@ require 'digest'
 
 class User < ApplicationRecord
   include Filterable
+  devise :database_authenticatable
 
-  attr_accessor :password,
-                :accessible
+  attr_accessor :accessible
 
   strip_attributes only: :email
 
@@ -112,8 +112,6 @@ class User < ApplicationRecord
 
   geocoded_by :full_street_address
   after_validation :geocode
-
-  before_save :encrypt_password, unless: "password.blank?"
 
   has_many :foster_dogs, class_name: 'Dog', foreign_key: 'foster_id'
   has_many :current_foster_dogs, -> { where(status: ['adoptable', 'adoption pending', 'on hold', 'coming soon', 'return pending']) }, class_name: 'Dog', foreign_key: 'foster_id'
@@ -172,18 +170,23 @@ class User < ApplicationRecord
   scope :has_parvo_house,         -> (status = true) { where(parvo_house: status) }
 
   def has_password?(submitted_password)
+    self.legacy_password.present? ? legacy_password == encrypt(submitted_password) :
+
     encrypted_password == encrypt(submitted_password)
   end
 
-  def self.authenticate(email, submitted_password)
-    user = find_by(email: email.downcase.strip)
-    return nil  if user.nil?
-    return user if user.has_password?(submitted_password)
-  end
-
-  def self.authenticate_with_salt(id, cookie_salt)
-    user = find_by(id: id)
-    user && user.salt == cookie_salt ? user : nil
+  def valid_password?(password)
+    if self.legacy_password.present?
+      if self.legacy_password == encrypt(password)
+        self.password = password
+        self.legacy_password = nil
+        self.save!
+        true
+      end
+      false
+    else
+      super
+    end
   end
 
   def out_of_date?
@@ -236,17 +239,8 @@ class User < ApplicationRecord
       email.downcase!
     end
 
-    def encrypt_password
-      self.salt = make_salt unless has_password?(password)
-      self.encrypted_password = encrypt(password)
-    end
-
     def encrypt(string)
       secure_hash("#{salt}--#{string}")
-    end
-
-    def make_salt
-      secure_hash("#{Time.now.utc}--#{password}")
     end
 
     def secure_hash(string)

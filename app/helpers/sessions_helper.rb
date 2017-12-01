@@ -13,28 +13,6 @@
 #    limitations under the License.
 
 module SessionsHelper
-  def sign_in(user)
-    if params[:remember_me]
-      cookies.signed[:remember_token] = { value: [user.id, user.salt],
-                         expires: 7.days.from_now }
-    else
-      cookies.signed[:remember_token] = [user.id, user.salt]
-    end
-    self.current_user = user
-  end
-
-  def current_user=(user)
-    @current_user = user
-  end
-
-  def current_user
-    @current_user ||= user_from_remember_token
-  end
-
-  def signed_in?
-    !current_user.nil?
-  end
-
   def is_locked?
     if current_user.locked?
       cookies.delete(:remember_token)
@@ -87,22 +65,17 @@ module SessionsHelper
     current_user.dl_locked_resources unless current_user.nil?
   end
 
-  def sign_out
-    cookies.delete(:remember_token)
-    self.current_user = nil
-  end
-
   def current_user?(user)
     user == current_user
   end
 
   def authenticate
-    deny_access unless signed_in?
+    deny_access unless user_signed_in?
   end
 
   def deny_access
     store_location
-    redirect_to signin_path, notice: "Please sign in to access this page"
+    redirect_to new_user_session_url, notice: "Please sign in to access this page"
   end
 
   def redirect_back_or(default)

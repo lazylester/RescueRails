@@ -50,7 +50,7 @@
 require 'rails_helper'
 
 describe DogsController, type: :controller do
-  let!(:admin) { create(:user, :admin) }
+  login_admin
 
   describe 'GET #index' do
     context 'user is logged in' do
@@ -65,7 +65,7 @@ describe DogsController, type: :controller do
       let(:params) { {} }
 
       before do
-        allow(controller).to receive(:signed_in?).and_return(true)
+        allow(controller).to receive(:user_signed_in?).and_return(true)
       end
 
       it 'in manager mode all dogs are returned' do
@@ -112,7 +112,7 @@ describe DogsController, type: :controller do
   end
 
   describe 'GET #show' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:dog) { create(:dog) }
 
@@ -123,7 +123,7 @@ describe DogsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:dog) { create(:dog) }
 
@@ -138,10 +138,6 @@ describe DogsController, type: :controller do
     let(:request) { -> { put :update, params: { id: test_dog.id, dog: attributes_for(:dog, name: 'New Dog Name', behavior_summary: 'This is a good doggy') } } }
 
     context 'logged in as admin' do
-      before :each do
-        allow(controller).to receive(:current_user) { admin }
-      end
-
       it 'updates the dog name' do
         expect { request.call }.to change { test_dog.reload.name }.from('Old Dog Name').to('New Dog Name')
       end
@@ -156,10 +152,6 @@ describe DogsController, type: :controller do
     context 'logged in as dog adder admin' do
       subject(:post_create) do
         post :create, params: { dog: attributes_for(:dog_with_photo_and_attachment) }
-      end
-
-      before do
-        allow(controller).to receive(:current_user) { admin }
       end
 
       context 'params are valid' do
@@ -188,6 +180,7 @@ describe DogsController, type: :controller do
   describe 'GET switch_view' do
     let(:request) { get :switch_view, params: {}, session: { mgr_view: mgr_view } }
     let(:mgr_view) { true }
+    let(:admin) { create(:user, :admin) }
 
     before do
       allow(controller).to receive(:current_user) { admin }
@@ -220,7 +213,7 @@ describe DogsController, type: :controller do
 
     context 'not signed in' do
       before do
-        allow(controller).to receive(:signed_in?) { false }
+        allow(controller).to receive(:user_signed_in?) { false }
       end
 
       it 'returns false' do
@@ -229,9 +222,11 @@ describe DogsController, type: :controller do
     end
 
     context 'signed in' do
-      include_context 'signed in admin'
-
+      let(:admin) { create(:user, :admin) }
       before do
+        allow(controller).to receive(:user_signed_in?) { true }
+        @request.env["devise.mapping"] = Devise.mappings[:admin]
+        sign_in admin
         controller.instance_variable_set(:@dog, dog)
       end
 
@@ -244,7 +239,7 @@ describe DogsController, type: :controller do
       end
 
       context 'dog foster is not the current user' do
-        let(:dog) { create(:dog, foster_id: admin.id + 1) }
+        let(:dog) { create(:dog, foster_id: admin.id + 2) }
 
         it 'returns false' do
           expect(subject).to eq(false)

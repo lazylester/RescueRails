@@ -21,6 +21,7 @@ describe FoldersController, type: :controller do
     context 'logged in with standard folder access' do
       before :each do
         allow(controller).to receive(:current_user) { dl_resources_user }
+        @request.env["devise.mapping"] = Devise.mappings[:dl_resources_user]
       end
 
       it 'is successful' do
@@ -34,6 +35,7 @@ describe FoldersController, type: :controller do
     context 'logged in with standard folder access' do
       before :each do
         allow(controller).to receive(:current_user) { dl_resources_user }
+        @request.env["devise.mapping"] = Devise.mappings[:dl_resources_user]
       end
 
       it 'is able to view files in standard folders' do
@@ -51,8 +53,10 @@ describe FoldersController, type: :controller do
 
     context 'logged in without any folder access' do
       before :each do
+        @request.env["devise.mapping"] = Devise.mappings[:no_access_user]
         allow(controller).to receive(:current_user) { no_access_user }
       end
+
       it 'is NOT able to view files in standard folders' do
         unlocked_folder = create(:folder, :unlocked)
         get :show, params: { id: unlocked_folder }
@@ -67,9 +71,7 @@ describe FoldersController, type: :controller do
     end
 
     context 'logged in with restricted folder access' do
-      before :each do
-        allow(controller).to receive(:current_user) { admin }
-      end
+      login_admin
       it 'is able to view files in standard folders' do
         unlocked_folder = create :folder
         get :show, params: { id: unlocked_folder }
@@ -84,7 +86,7 @@ describe FoldersController, type: :controller do
   end
 
   describe 'GET #new' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       get :new
@@ -93,7 +95,7 @@ describe FoldersController, type: :controller do
   end
 
   describe 'PUT #update' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:folder) { create(:folder) }
 
@@ -105,7 +107,7 @@ describe FoldersController, type: :controller do
   end
 
   describe 'POST #create' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       request.env['HTTP_REFERER'] = '/'
@@ -116,7 +118,7 @@ describe FoldersController, type: :controller do
   end
 
   describe 'GET #edit' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:folder) { create(:folder) }
 
@@ -127,7 +129,7 @@ describe FoldersController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:folder) { create(:folder) }
 

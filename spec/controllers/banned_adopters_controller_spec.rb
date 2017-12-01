@@ -19,9 +19,7 @@ describe BannedAdoptersController, type: :controller do
   let!(:admin) { create(:user, :admin) }
   let!(:hacker) { create(:user) }
 
-  before :each do
-    allow(controller).to receive(:current_user) { admin }
-  end
+  login_admin
 
   describe 'GET index' do
     it 'is successful' do

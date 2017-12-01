@@ -3,7 +3,7 @@
     <h1><%= @title %></h1>
   </div>
   <div class="span4 offset4">
-    <% if signed_in? %>
+    <% if user_signed_in? %>
       <% if can_add_dogs? %>
         <%= link_to "Add a Dog", new_dog_path, :class => "btn btn-primary" %>
       <% end %>
@@ -19,7 +19,7 @@
 
 <%= will_paginate @dogs %>
 
-  <% if signed_in? && session[:mgr_view] == true %>
+  <% if user_signed_in? && session[:mgr_view] == true %>
 
     <%= render 'manager' %>
 

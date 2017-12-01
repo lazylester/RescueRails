@@ -1,4 +1,5 @@
 RescueRails::Application.routes.draw do
+  devise_for :users
   get "/adopters/check_email", to: "adopters#check_email"
   get "/dogs/switch_view", to: "dogs#switch_view"
 
@@ -20,7 +21,7 @@ RescueRails::Application.routes.draw do
     resources :adoptions
   end
 
-  resources :sessions, only: [:new, :create, :destroy]
+  # resources :sessions, only: [:new, :create, :destroy] 
   resources :password_resets
 
   get '/events/past', to: 'events#past'
@@ -39,8 +40,6 @@ RescueRails::Application.routes.draw do
 
   root                         to: 'pages#home'
 
-  get '/signin',               to: 'sessions#new'
-  get '/signout',              to: 'sessions#destroy'
   get '/adopt',                to: 'adopters#new'
 
   get '/contact',              to: 'pages#contact'

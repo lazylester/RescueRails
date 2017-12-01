@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171010004452) do
+ActiveRecord::Schema.define(version: 20171119051955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -298,7 +298,7 @@ ActiveRecord::Schema.define(version: 20171010004452) do
     t.string   "email",                        limit: 255
     t.datetime "created_at",                               precision: 6
     t.datetime "updated_at",                               precision: 6
-    t.string   "encrypted_password",           limit: 255
+    t.string   "legacy_password",                                                                     comment: "Password encrypted with legacy hashing, made obsolete by 'encrypted_password'."
     t.string   "salt",                         limit: 255
     t.boolean  "admin",                                                  default: false
     t.string   "password_reset_token",         limit: 255
@@ -357,6 +357,7 @@ ActiveRecord::Schema.define(version: 20171010004452) do
     t.boolean  "social_media_manager",                                   default: false, null: false
     t.boolean  "graphic_design",                                         default: false, null: false
     t.string   "country",                      limit: 3,                                 null: false, comment: "Country as a ISO 3166-1 alpha-3 code"
+    t.string   "encrypted_password"
     t.index ["agreement_id"], name: "index_users_on_agreement_id", using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["latitude", "longitude"], name: "index_users_on_latitude_and_longitude", using: :btree

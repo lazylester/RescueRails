@@ -31,7 +31,7 @@ describe AdoptersController, type: :controller do
   render_views
 
   describe 'GET index' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'should be successful' do
       get :index
@@ -42,7 +42,7 @@ describe AdoptersController, type: :controller do
   describe 'GET show' do
     let(:adopter) { create(:adopter_with_app) }
 
-    include_context 'signed in admin'
+    login_admin
 
     it 'should be successful' do
       get :show, params: { id: adopter.id }
@@ -71,7 +71,7 @@ describe AdoptersController, type: :controller do
   describe 'PUT update' do
     let(:adopter) { create(:adopter_with_app) }
 
-    include_context 'signed in admin'
+    login_admin
 
     context 'can complete adopters' do
       before do

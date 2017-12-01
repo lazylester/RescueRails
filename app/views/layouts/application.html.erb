@@ -16,7 +16,7 @@
     ga('create', 'UA-12286524-2', 'auto');
     ga('send', 'pageview');
 
-    <% if signed_in? %>
+    <% if user_signed_in? %>
        ga('set', 'dimension1', 'is_staff');
     <% end %>
   </script>
@@ -75,8 +75,8 @@
       <% else %>
         <%= content_tag(:div, value, :class => "alert alert-#{key}") %>
       <% end %>
-    <% end %> 
-    <% if signed_in? && current_user.out_of_date? %>
+    <% end %>
+    <% if user_signed_in? && current_user.out_of_date? %>
       <div class="alert alert-block alert-warning">
         <p>Please verify your profile information!</p>
         <p><%= link_to("Profile", current_user, :class => "btn btn-warning") %></p>

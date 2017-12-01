@@ -76,9 +76,9 @@ class DogsController < ApplicationController
   def index
     @title = session[:mgr_view] ? 'Dog Manager' : 'Our Dogs'
 
-    if signed_in? && session[:mgr_view]
+    if user_signed_in? && session[:mgr_view]
       do_manager_view = true
-    elsif signed_in? && params[:all_dogs] == "true"
+    elsif user_signed_in? && params[:all_dogs] == "true"
       do_manager_view = true
     else
       do_manager_view = false
@@ -243,7 +243,7 @@ class DogsController < ApplicationController
   end
 
   def fostering_dog?
-    return false unless signed_in?
+    return false unless user_signed_in?
 
     @dog.foster_id == current_user.id
   end

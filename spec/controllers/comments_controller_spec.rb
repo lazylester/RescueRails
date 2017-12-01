@@ -16,12 +16,10 @@ require 'rails_helper'
 describe CommentsController, type: :controller do
   let!(:user) { create(:user) }
 
-  before(:each) do
-    allow(controller).to receive(:current_user).and_return(user)
-  end
+  login_user
 
   describe 'GET #index' do
-    include_context 'signed in user'
+    login_admin
 
     let(:dog) { create(:dog) }
 
@@ -32,7 +30,7 @@ describe CommentsController, type: :controller do
   end
 
   describe 'GET #show' do
-    include_context 'signed in user'
+    login_admin
 
     let(:comment) { create(:comment) }
 

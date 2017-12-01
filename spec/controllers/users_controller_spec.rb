@@ -68,7 +68,8 @@ describe UsersController, type: :controller do
 
     context 'default index list' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
 
       it 'returns all users' do
@@ -80,7 +81,8 @@ describe UsersController, type: :controller do
 
     context 'name search' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
       it 'returns the searched for user' do
         smith = create(:user, name: 'Jane Smithbot')
@@ -91,7 +93,8 @@ describe UsersController, type: :controller do
 
     context 'email search' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
       it 'returns the searched for user email' do
         smith = create(:user, name: 'Jane Smithbot', email: 'b@test.com')
@@ -102,7 +105,8 @@ describe UsersController, type: :controller do
 
     context 'location search' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
       it 'returns users near the searched location' do
         expect(User).to receive(:near).and_call_original
@@ -112,7 +116,8 @@ describe UsersController, type: :controller do
 
     context 'tab filter' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
 
       it 'returns the training team members' do
@@ -150,7 +155,8 @@ describe UsersController, type: :controller do
   describe 'POST create' do
     context 'logged in as an admin' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
 
       it 'is able to create a user' do
@@ -162,7 +168,8 @@ describe UsersController, type: :controller do
 
     context 'logged in as normal user' do
       before :each do
-        allow(controller).to receive(:current_user) { hacker }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(hacker)
+        allow(controller).to receive(:current_user).and_return(hacker)
       end
 
       it 'is unable to create a user' do
@@ -175,25 +182,27 @@ describe UsersController, type: :controller do
 
   describe 'PUT update' do
     let(:test_user) { create(:user, admin: FALSE) }
-    let(:request) { -> { put :update, params: { id: test_user.id, user: attributes_for(:user, admin: TRUE) } } }
+    let(:test_request) { -> { put :update, params: { id: test_user.id, user: attributes_for(:user, admin: TRUE) } } }
 
     context 'logged in as admin' do
       before :each do
-        allow(controller).to receive(:current_user) { admin }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(admin)
+        allow(controller).to receive(:current_user).and_return(admin)
       end
 
       it 'updates the users permissions' do
-        expect { request.call }.to change { test_user.reload.admin }.from(FALSE).to(TRUE)
+        expect { test_request.call }.to change { test_user.reload.admin }.from(FALSE).to(TRUE)
       end
     end
 
     context 'logged in as normal user' do
       before :each do
-        allow(controller).to receive(:current_user) { hacker }
+        allow(request.env['warden']).to receive(:authenticate!).and_return(hacker)
+        allow(controller).to receive(:current_user).and_return(hacker)
       end
 
       it 'is unable to modify user permissions' do
-        expect { request.call }.to_not change { test_user.reload.admin }
+        expect { test_request.call }.to_not change { test_user.reload.admin }
       end
     end
   end

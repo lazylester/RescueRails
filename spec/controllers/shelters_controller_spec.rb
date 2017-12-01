@@ -14,7 +14,7 @@ describe SheltersController, type: :controller do
   let!(:hacker) { create(:user) }
 
   describe 'GET #index' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       get :index
@@ -23,7 +23,7 @@ describe SheltersController, type: :controller do
   end
 
   describe 'GET #show' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:shelter) { create(:shelter) }
 
@@ -34,7 +34,7 @@ describe SheltersController, type: :controller do
   end
 
   describe 'GET #new' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       get :new
@@ -43,7 +43,7 @@ describe SheltersController, type: :controller do
   end
 
   describe 'GET #edit' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:shelter) { create(:shelter) }
 
@@ -55,7 +55,7 @@ describe SheltersController, type: :controller do
 
   describe 'POST #create' do
     context 'logged in as an admin' do
-      include_context 'signed in admin'
+      login_admin
 
       it 'is able to create a shelter' do
         expect{
@@ -82,7 +82,7 @@ describe SheltersController, type: :controller do
     let(:request) { -> { put :update, params: { id: test_shelter.id, shelter: attributes_for(:shelter, name: 'New Shelter') } } }
 
     context 'logged in as admin' do
-      include_context 'signed in admin'
+      login_admin
 
       it 'updates the shelter name' do
         expect { request.call }.to change { test_shelter.reload.name }.from('BARCS').to('New Shelter')

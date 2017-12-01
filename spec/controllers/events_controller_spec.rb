@@ -9,7 +9,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'GET #past' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       get :past
@@ -27,7 +27,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'GET #new' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       get :new
@@ -36,7 +36,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:event) { create(:event) }
 
@@ -47,7 +47,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'PUT #update' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:event) { create(:event) }
 
@@ -59,7 +59,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'POST #create' do
-    include_context 'signed in admin'
+    login_admin
 
     it 'is successful' do
       post :create, params: { event: attributes_for(:event) }
@@ -69,7 +69,7 @@ describe EventsController, type: :controller do
   end
 
   describe 'POST #delete' do
-    include_context 'signed in admin'
+    login_admin
 
     let(:event) { create(:event) }
 
